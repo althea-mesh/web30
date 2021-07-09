@@ -1,0 +1,24 @@
+name: Rust
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose -- --skip test_complex_response
+    - name: Linter
+      run: 'grep -q ''opt-level = "z"'' Cargo.toml'
+    - name: Check code formatting
+      run: rustup component add rustfmt && cargo fmt --all -- --check
+    - name: Check for Clippy lints
+      run: rustup component add clippy && cargo clippy --all --all-targets --all-features -- -D warnings
